@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { EventsService } from './events.service';
-import { Event, Specialist, User } from '@prisma/client';
+import { Event, Role, Specialist, User } from '@prisma/client';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GUser } from '@/common/decorators/user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -9,6 +17,8 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { EventModel } from '@/models/event.model';
 import { CommentModel } from '@/models/comment.model';
 import { ClearEventModel } from '@/models/clear-event.model';
+import { Authorized } from '@/common/guards/auth.guard';
+import { Roles } from '@/common/decorators';
 
 @Controller('event')
 export class EventsController {
@@ -51,6 +61,7 @@ export class EventsController {
 
   @Put(':id')
   @ApiOkResponse({ type: ClearEventModel })
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiBody({ type: UpdateEventDto })
   update(
     @Param('id') id: string,
@@ -61,6 +72,7 @@ export class EventsController {
 
   @Post(':id/comment')
   @ApiOkResponse({ type: CommentModel })
+  @UseGuards(Authorized)
   @ApiBody({ type: CreateCommentDto })
   addComment(
     @Param('id') id: string,
