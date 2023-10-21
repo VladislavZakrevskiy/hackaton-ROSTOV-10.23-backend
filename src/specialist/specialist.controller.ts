@@ -13,6 +13,8 @@ import { UpdateSpecialistDto } from './dto/update-specialist.dto';
 import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SpecialistModel } from '@/models/specialist.model';
 import { SpecialistWithFeedback } from './dto/specialist-with-feedback.model';
+import { Roles } from '@/common/decorators';
+import { Role } from '@prisma/client';
 
 @ApiTags('specialist')
 @Controller('specialist')
@@ -21,6 +23,7 @@ export class SpecialistController {
 
   @Post()
   @ApiBody({ type: CreateSpecialistDto })
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiOkResponse({ type: SpecialistModel })
   create(@Body() createSpecialistDto: CreateSpecialistDto) {
     return this.specialistService.create(createSpecialistDto);
@@ -39,6 +42,7 @@ export class SpecialistController {
   }
 
   @Patch(':id')
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiBody({ type: UpdateSpecialistDto })
   @ApiOkResponse({ type: SpecialistModel })
   update(
@@ -49,6 +53,8 @@ export class SpecialistController {
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN, Role.MANAGER)
+  @ApiOkResponse({ type: SpecialistModel })
   remove(@Param('id') id: string) {
     return this.specialistService.remove(id);
   }
