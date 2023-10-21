@@ -71,10 +71,11 @@ model Event {
 }
 
 model Credential {
-  id       String @id @default(cuid())
-  event_id String
-  event    Event  @relation(fields: [event_id], references: [id])
-
+  id         String   @id @default(cuid())
+  event_id   String
+  event      Event    @relation(fields: [event_id], references: [id])
+  title      String
+  value      String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
