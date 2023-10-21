@@ -64,6 +64,7 @@ export class EventsController {
   }
 
   @Post(':id/register')
+  @UseGuards(Authorized)
   @ApiOkResponse({ type: ClearUserModel })
   registerOnEvent(@Param('id') eventId: string, @GUser() user: User) {
     return this.eventService.registerOnEvent(eventId, user.id);
@@ -71,6 +72,7 @@ export class EventsController {
 
   @Post(':id/credentials')
   @ApiOkResponse({ type: CredentialsModel })
+  @Roles(Role.ADMIN, Role.MANAGER)
   @ApiBody({ type: AddCredentialDto })
   addCredential(@Param('id') eventId: string, @Body() body: AddCredentialDto) {
     return this.eventService.addCredential(eventId, body);
