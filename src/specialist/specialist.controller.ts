@@ -10,10 +10,11 @@ import {
 import { SpecialistService } from './specialist.service';
 import { CreateSpecialistDto } from './dto/create-specialist.dto';
 import { UpdateSpecialistDto } from './dto/update-specialist.dto';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { SpecialistModel } from '@/models/specialist.model';
 import { SpecialistWithFeedback } from './dto/specialist-with-feedback.model';
 
+@ApiTags('specialist')
 @Controller('specialist')
 export class SpecialistController {
   constructor(private readonly specialistService: SpecialistService) {}
