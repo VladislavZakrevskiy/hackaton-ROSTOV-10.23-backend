@@ -44,8 +44,18 @@ export class EventsService {
     });
   }
 
-  registerOnEvent(eventId: string, userId: string): Promise<ClearUserModel> {
-    return this.prisma.user.update({
+  async registerOnEvent(
+    eventId: string,
+    userId: string,
+  ): Promise<ClearUserModel> {
+    await this.prisma.notification.create({
+      data: {
+        event_id: eventId,
+        user_id: userId,
+        text: 'Вы успешно зарегистрировались на событие',
+      },
+    });
+    return await this.prisma.user.update({
       where: { id: userId },
       data: {
         events: {
