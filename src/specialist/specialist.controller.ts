@@ -16,8 +16,8 @@ import { SpecialistWithFeedback } from './dto/specialist-with-feedback.model';
 import { Roles } from '@/common/decorators';
 import { Role } from '@prisma/client';
 
-@ApiTags('specialist')
-@Controller('specialist')
+@ApiTags('specialists')
+@Controller('specialists')
 export class SpecialistController {
   constructor(private readonly specialistService: SpecialistService) {}
 
