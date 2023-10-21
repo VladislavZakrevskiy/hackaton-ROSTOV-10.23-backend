@@ -12,6 +12,7 @@ model User {
   email         String         @unique
   first_name    String         @db.VarChar(32)
   last_name     String         @db.VarChar(32)
+  image_url     String?
   role          Role
   comments      Comment[]
   notifications Notification[]
