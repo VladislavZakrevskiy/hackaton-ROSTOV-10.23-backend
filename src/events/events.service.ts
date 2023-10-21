@@ -6,6 +6,11 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CommentModel } from '@/models/comment.model';
 import { ClearEventModel } from '@/models/clear-event.model';
+import { AddCredentialDto } from './dto/add-credential.dto';
+import { CredentialsModel } from '@/models/credentials.model';
+import { warn } from 'console';
+import { UserModel } from '@/models/user.model';
+import { ClearUserModel } from '@/models/clear-user.model';
 
 @Injectable()
 export class EventsService {
@@ -27,12 +32,38 @@ export class EventsService {
     });
   }
 
+  addCredential(
+    eventId: string,
+    body: AddCredentialDto,
+  ): Promise<CredentialsModel> {
+    return this.prisma.credential.create({
+      data: {
+        event_id: eventId,
+        ...body,
+      },
+    });
+  }
+
+  registerOnEvent(eventId: string, userId: string): Promise<ClearUserModel> {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        events: {
+          connect: {
+            id: eventId,
+          },
+        },
+      },
+    });
+  }
+
   createEvent(event: CreateEventDto): Promise<ClearEventModel> {
-    const { specialist_id, ...eventData } = event;
+    const { specialist_id, credentials, ...eventData } = event;
     return this.prisma.event.create({
       data: {
         ...eventData,
         specialist: { connect: { id: specialist_id } },
+        credentials: { createMany: { data: credentials } },
       },
     });
   }

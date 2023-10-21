@@ -12,14 +12,18 @@ import { Event, Role, Specialist, User } from '@prisma/client';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GUser } from '@/common/decorators/user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { ApiBody, ApiOkResponse, OmitType } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags, OmitType } from '@nestjs/swagger';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventModel } from '@/models/event.model';
 import { CommentModel } from '@/models/comment.model';
 import { ClearEventModel } from '@/models/clear-event.model';
 import { Authorized } from '@/common/guards/auth.guard';
 import { Roles } from '@/common/decorators';
+import { CredentialsModel } from '@/models/credentials.model';
+import { AddCredentialDto } from './dto/add-credential.dto';
+import { ClearUserModel } from '@/models/clear-user.model';
 
+@ApiTags('event')
 @Controller('event')
 export class EventsController {
   constructor(private readonly eventService: EventsService) {}
@@ -57,6 +61,19 @@ export class EventsController {
   @ApiBody({ type: CreateEventDto })
   createEvent(body: CreateEventDto): Promise<ClearEventModel> {
     return this.eventService.createEvent(body);
+  }
+
+  @Post(':id/register')
+  @ApiOkResponse({ type: ClearUserModel })
+  registerOnEvent(@Param('id') eventId: string, @GUser() user: User) {
+    return this.eventService.registerOnEvent(eventId, user.id);
+  }
+
+  @Post(':id/credentials')
+  @ApiOkResponse({ type: CredentialsModel })
+  @ApiBody({ type: AddCredentialDto })
+  addCredential(@Param('id') eventId: string, @Body() body: AddCredentialDto) {
+    return this.eventService.addCredential(eventId, body);
   }
 
   @Put(':id')
