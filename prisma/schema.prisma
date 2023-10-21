@@ -20,6 +20,7 @@ model User {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  events     Event[]
 }
 
 model Feedback {
@@ -51,7 +52,7 @@ model Specialist {
 
 model Event {
   id            String         @id @default(cuid())
-  link          String
+  image_link    String
   record_link   String?
   name          String         @db.VarChar(128)
   description   String         @db.VarChar(512)
@@ -63,6 +64,7 @@ model Event {
   feedbacks     Feedback[]
   specialist_id String
   specialist    Specialist     @relation(fields: [specialist_id], references: [id])
+  users         User[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -83,6 +85,7 @@ model Comment {
   event    Event  @relation(fields: [event_id], references: [id])
   user_id  String
   user     User   @relation(fields: [user_id], references: [id])
+  text     String @db.VarChar(512)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

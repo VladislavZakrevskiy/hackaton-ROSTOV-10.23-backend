@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { EventsModule } from './events/events.module';
 import config from './common/configs/config';
 import { PrismaService } from './common/services';
 
@@ -10,6 +11,7 @@ import { PrismaService } from './common/services';
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [config] }),
     UsersModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, PrismaService],
