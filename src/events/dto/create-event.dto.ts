@@ -1,49 +1,11 @@
-import {
-  IsString,
-  IsOptional,
-  IsDate,
-  IsEnum,
-  IsArray,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { EventModel } from '../models/event.model';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export enum EventStatus {
-    PUBLISHED = 'PUBLISHED',
-    FINISHED = 'FINISHED'
-}
-  
-export class CreateEventDto {
-    @IsString()
-    description: string;
-  
-    @IsString()
-    link: string;
-  
-    @IsString()
-    name: string;
-  
-    @IsDate()
-    start_date: Date;
-  
-    @IsEnum(EventStatus)
-    status: EventStatus;
-  
-    @IsString()
-    record_link: string;
-  
-    @ValidateNested()
-    specialist: SpecialistDTO
+export class CreateEventDto extends OmitType(EventModel, ['id']) {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  specialist_id: string;
 }
 
-
-class SpecialistDTO {
-    @IsString()
-    first_name: string;
-  
-    @IsString()
-    last_name: string;
-  
-    @IsString()
-    social_link: string;
-}
