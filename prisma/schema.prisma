@@ -8,29 +8,104 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
-  password  String
-  firstname String?
-  lastname  String?
-  posts     Post[]
-  role      Role
+  id            String         @id @default(cuid())
+  email         String         @unique
+  first_name    String         @db.VarChar(32)
+  last_name     String         @db.VarChar(32)
+  role          Role
+  comments      Comment[]
+  notifications Notification[]
+  feedbacks     Feedback[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  published Boolean
-  title     String
-  content   String?
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String?
+model Feedback {
+  id            String     @id @default(cuid())
+  score         Int        @db.SmallInt()
+  text          String?
+  event_id      String
+  event         Event      @relation(fields: [event_id], references: [id])
+  user_id       String
+  user          User       @relation(fields: [user_id], references: [id])
+  specialist_id String
+  specialist    Specialist @relation(fields: [specialist_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Specialist {
+  id          String     @id @default(cuid())
+  first_name  String     @db.VarChar(32)
+  last_name   String     @db.VarChar(32)
+  social_link String
+  feedbacks   Feedback[]
+  events      Event[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Event {
+  id            String         @id @default(cuid())
+  link          String
+  record_link   String?
+  name          String         @db.VarChar(128)
+  description   String         @db.VarChar(512)
+  start_date    DateTime
+  status        EventStatus
+  comments      Comment[]
+  credentials   Credential[]
+  notifications Notification[]
+  feedbacks     Feedback[]
+  specialist_id String
+  specialist    Specialist     @relation(fields: [specialist_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Credential {
+  id       String @id @default(cuid())
+  event_id String
+  event    Event  @relation(fields: [event_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Comment {
+  id       String @id @default(cuid())
+  event_id String
+  event    Event  @relation(fields: [event_id], references: [id])
+  user_id  String
+  user     User   @relation(fields: [user_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Notification {
+  id       String @id @default(cuid())
+  user_id  String
+  user     User   @relation(fields: [user_id], references: [id])
+  event_id String
+  event    Event  @relation(fields: [event_id], references: [id])
+  text     String @db.VarChar(128)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 enum Role {
   ADMIN
+  MANAGER
   USER
+}
+
+enum EventStatus {
+  PUBLISHED
+  FINISHED
 }
