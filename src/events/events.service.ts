@@ -1,16 +1,20 @@
 import { PrismaService } from '@/common/services';
 import { Injectable } from '@nestjs/common';
-import { Comment, Event, Specialist } from '@prisma/client';
+import { Event, Specialist } from '@prisma/client';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { CommentModel } from '@/models/comment.model';
+import { ClearEventModel } from '@/models/clear-event.model';
 
 @Injectable()
 export class EventsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getAll(): Promise<Event[]> {
-    return this.prisma.event.findMany();
+  getAll(): Promise<Array<ClearEventModel>> {
+    return this.prisma.event.findMany({
+      include: { comments: true },
+    });
   }
 
   getById(id: string): Promise<Event> {
@@ -18,13 +22,12 @@ export class EventsService {
       where: { id },
       include: {
         comments: true,
-        feedbacks: true,
         credentials: true,
       },
     });
   }
 
-  createEvent(event: CreateEventDto) {
+  createEvent(event: CreateEventDto): Promise<ClearEventModel> {
     const { specialist_id, ...eventData } = event;
     return this.prisma.event.create({
       data: {
@@ -34,7 +37,10 @@ export class EventsService {
     });
   }
 
-  async update(event_id: string, updatedData: UpdateEventDto): Promise<Event> {
+  async update(
+    event_id: string,
+    updatedData: UpdateEventDto,
+  ): Promise<ClearEventModel> {
     const updatedEvent = await this.prisma.event.update({
       where: { id: event_id },
       data: {
@@ -48,7 +54,7 @@ export class EventsService {
     eventId: string,
     userId: string,
     data: CreateCommentDto,
-  ): Promise<Comment> {
+  ): Promise<CommentModel> {
     return this.prisma.comment.create({
       data: {
         event_id: eventId,

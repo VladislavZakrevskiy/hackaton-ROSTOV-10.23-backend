@@ -4,37 +4,69 @@ import { Event, Specialist, User } from '@prisma/client';
 import { CreateEventDto } from './dto/create-event.dto';
 import { GUser } from '@/common/decorators/user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { ApiBody, ApiOkResponse, OmitType } from '@nestjs/swagger';
+import { UpdateEventDto } from './dto/update-event.dto';
+import { EventModel } from '@/models/event.model';
+import { CommentModel } from '@/models/comment.model';
+import { ClearEventModel } from '@/models/clear-event.model';
 
 @Controller('event')
 export class EventsController {
   constructor(private readonly eventService: EventsService) {}
 
   @Get('/all')
-  getAll(): Promise<Event[]> {
+  @ApiOkResponse({
+    type: OmitType(EventModel, [
+      'users',
+      'feedbacks',
+      'specialists',
+      'notifications',
+      'credentials',
+    ]),
+    isArray: true,
+  })
+  getAll(): Promise<ClearEventModel[]> {
     return this.eventService.getAll();
   }
 
   @Get(':id')
+  @ApiOkResponse({
+    type: OmitType(EventModel, [
+      'users',
+      'feedbacks',
+      'specialists',
+      'notifications',
+    ]),
+  })
   getById(@Param('id') id: string): Promise<Event> {
     return this.eventService.getById(id);
   }
 
   @Post()
-  createEvent(body: CreateEventDto) {
+  @ApiOkResponse({ type: ClearEventModel })
+  @ApiBody({ type: CreateEventDto })
+  createEvent(body: CreateEventDto): Promise<ClearEventModel> {
     return this.eventService.createEvent(body);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, data: Partial<Event>) {
+  @ApiOkResponse({ type: ClearEventModel })
+  @ApiBody({ type: UpdateEventDto })
+  update(
+    @Param('id') id: string,
+    data: UpdateEventDto,
+  ): Promise<ClearEventModel> {
     return this.eventService.update(id, data);
   }
 
   @Post(':id/comment')
+  @ApiOkResponse({ type: CommentModel })
+  @ApiBody({ type: CreateCommentDto })
   addComment(
     @Param('id') id: string,
     @GUser() user: User,
     @Body() body: CreateCommentDto,
-  ) {
+  ): Promise<CommentModel> {
     return this.eventService.addComment(id, user.id, body);
   }
 
