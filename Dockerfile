@@ -1,12 +1,10 @@
 FROM node:20-slim AS base
-
-# Create app directory
+RUN apt-get update -y && apt-get install -y openssl
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY . .
 
 FROM base as build
@@ -15,7 +13,8 @@ RUN pnpm run build
 
 FROM base
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./app/dist
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/prisma /app/prisma
 
 EXPOSE 3000
-CMD [ "node", "app/dist/main" ]
+CMD [ "pnpm", "run", "start:migrate:prod" ]
