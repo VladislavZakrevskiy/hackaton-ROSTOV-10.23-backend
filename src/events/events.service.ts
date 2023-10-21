@@ -24,14 +24,6 @@ export class EventsService {
     });
   }
 
-  private isSameDay(dateA: Date, dateB: Date): boolean {
-    return (
-      dateA.getFullYear() === dateB.getFullYear() &&
-      dateA.getMonth() === dateB.getMonth() &&
-      dateA.getDate() === dateB.getDate()
-    );
-  }
-
   createEvent(event: CreateEventDto) {
     const { specialist_id, ...eventData } = event;
     return this.prisma.event.create({
