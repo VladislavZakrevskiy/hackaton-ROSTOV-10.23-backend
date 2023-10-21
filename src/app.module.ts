@@ -7,6 +7,7 @@ import { EventsModule } from './events/events.module';
 import config from './common/configs/config';
 import { PrismaService } from './common/services';
 import { SpecialistModule } from './specialist/specialist.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SpecialistModule } from './specialist/specialist.module';
     UsersModule,
     EventsModule,
     SpecialistModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService, PrismaService],
