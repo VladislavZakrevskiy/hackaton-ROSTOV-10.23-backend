@@ -8,13 +8,17 @@ import { CommentModel } from '@/models/comment.model';
 import { ClearEventModel } from '@/models/clear-event.model';
 import { AddCredentialDto } from './dto/add-credential.dto';
 import { CredentialsModel } from '@/models/credentials.model';
-import { warn } from 'console';
-import { UserModel } from '@/models/user.model';
 import { ClearUserModel } from '@/models/clear-user.model';
 
 @Injectable()
 export class EventsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  getEventUsers(eventId: string): Promise<ClearUserModel[]> {
+    return this.prisma.user.findMany({
+      where: { events: { some: { id: eventId } } },
+    });
+  }
 
   getAll(): Promise<Array<ClearEventModel>> {
     return this.prisma.event.findMany({

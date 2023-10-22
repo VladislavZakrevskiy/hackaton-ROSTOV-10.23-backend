@@ -70,6 +70,12 @@ export class EventsController {
     return this.eventService.registerOnEvent(eventId, user.id);
   }
 
+  @Get(':id/users')
+  @ApiOkResponse({ type: ClearUserModel, isArray: true })
+  getEventUsers(@Param('id') eventId: string) {
+    return this.eventService.getEventUsers(eventId);
+  }
+
   @Post(':id/credentials')
   @ApiOkResponse({ type: CredentialsModel })
   @Roles(Role.ADMIN, Role.MANAGER)
